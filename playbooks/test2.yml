@@ -1,0 +1,27 @@
+---
+ - hosts: all
+   #connection: local
+   gather_facts: True
+   collections:
+   - netbox.netbox.netbox_ip_address
+
+   vars:
+    ip: "{{ ansible_eth0.ipv4.address }}/{{ansible_default_ipv4.netmask }}"
+
+   tasks:
+   - set_fact:
+       mask_cidr: "{{ ip | ipaddr('prefix') }}"
+
+   - name: Create IP address in Netbox
+     netbox_ip_address:
+       netbox_url: http://netbox.example.local
+       netbox_token: 22cbfcfac55aea33948980d19c328891e847ccb1
+       data:
+         assigned_object:
+           name: Test name
+           device: test device
+         address: "{{ ansible_eth0.ipv4.address + '/' + mask_cidr }}"
+         dns_name: "{{ ansible_hostname }}"
+         description: "{{ ansible_lsb.description }}"
+       state: present
+     delegate_to: localhost
