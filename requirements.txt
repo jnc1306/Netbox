@@ -1,3 +1,3 @@
-pynetaddr
+netaddr
 pynetbox
 python-nmap
